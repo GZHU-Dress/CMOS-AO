@@ -8,9 +8,6 @@ import math
 import random
 
 
-print('y = 10sin(5x) + 7cos(4x)')
-
-
 def b2d(b, max_value, chrom_length):
     """计算二进制序列代表的数值"""
     t = 0
@@ -99,10 +96,12 @@ def cumsum(fit_value):
 
 
 def selection(pop, fit_value):
+    """新的种群"""
     newfit_value = []
     total_fit = sum(fit_value)  # 适应度总和
     for i in range(len(fit_value)):
         newfit_value.append(fit_value[i] / total_fit)
+    # 计算累计概率
     cumsum(newfit_value)
     ms = []
     pop_len = len(pop)
@@ -123,12 +122,14 @@ def selection(pop, fit_value):
 
 
 def crossover(pop, pc):
+    """交配"""
     pop_len = len(pop)
     for i in range(pop_len - 1):
-        if (random.random() < pc):
+        if(random.random() < pc):
             cpoint = random.randint(0, len(pop[0]))
-            temp1 = temp2 = []
-            temp1.extend(pop[i][0:cpoint])  # 叠加切片
+            temp1 = []
+            temp2 = []
+            temp1.extend(pop[i][0:cpoint])
             temp1.extend(pop[i + 1][cpoint:len(pop[i])])
             temp2.extend(pop[i + 1][0:cpoint])
             temp2.extend(pop[i][cpoint:len(pop[i])])
@@ -140,19 +141,20 @@ def mutaion(pop, pm):
     """变异"""
     px = len(pop)
     py = len(pop[0])
+
     for i in range(px):
-        if (random.random() < pm):
+        if(random.random() < pm):
             mpoint = random.randint(0, py - 1)
-            if (pop[i][mpoint] == 1):
+            if(pop[i][mpoint] == 1):
                 pop[i][mpoint] = 0
             else:
                 pop[i][mpoint] = 1
 
 
 pop_size = 500  # 种群数量
-max_value = 10  # 基因种允许出现的最大值
-chrom_length = 10  # 染色体长度
-pc = 0.6  # 交配概率
+max_value = 15  # 基因种允许出现的最大值
+chrom_length = 15  # 染色体长度
+pc = 0.8  # 交配概率
 pm = 0.01  # 变异概率
 results = [[]]  # 存储每一代的最优解，N个二元组
 fit_value = []  # 个体适应度
