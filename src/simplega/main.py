@@ -171,10 +171,10 @@ for i in range(pop_size):
     mutaion(pop, pm)  # 变异
 results = results[1:]
 results.sort()
-print('results[-1]', results[-1], '|', 'best_individual',
-      best_individual, '|', 'best_fit',
-      best_fit, '|', 'obj_value[1]', obj_value[1])
-print('results', results)
+print('results[-1]', results[-1], '\n', 'best_individual',
+      best_individual, '\n', 'best_fit',
+      best_fit, '\n', 'obj_value[1]', obj_value[1])
+# print('results', results)
 print("y = %f, x = %f" % (results[-1][0], results[-1][1]))
 
 X = []
