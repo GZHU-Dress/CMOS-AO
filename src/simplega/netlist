@@ -1,0 +1,49 @@
+************************************************************************
+* auCdl Netlist:
+*
+* Library Name: ZX_LDO
+* Top Cell Name: opamp2_LDO_3
+* View Name: schematic
+* Netlisted on: May 10 17:40:09 2017
+************************************************************************
+
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+
+************************************************************************
+* Library Name: ZX_LDO
+* Cell Name: opamp2_LDO_Cq
+* View Name: schematic
+************************************************************************
+
+.SUBCKT opamp2_LDO_Cq_mf GND IB VDD VOUT VREF VT VAC
+*.PININFO VREF:I VOUT:O GND:B IB:B VDD:B VT:B
+CCq VG net29 .6p
+CCm net21 VOUT 1.p
+CCL VOUT GND 100p
+RR1 net49 GND 50k
+RR0 VOUT net49 60k
+*CC VG GND -1.9p
+*CC1 VDD VG 10P
+*CC2 VDD VOUT -20.5p
+MPM5 VOUT VG VDD VDD p18 W=100u L=.2u M=35
+*MNMF VOUT net21 GND GND n18 W=3u L=1u M=1
+MPM6 IB IB VDD VDD p18 W=4u L=1u M=1
+MPM0 net52 IB VDD VDD p18 W=18u L=1u M=1
+
+MPM2 net29 net49 net52 net52 p18 W=4u L=1u M=1
+MPM1 net21 VREF net52 net52 p18 W=4u L=1u M=1
+MNM1 net29 net29 GND GND n18 W=2u L=7u M=1
+MNM0 net21 net29 GND GND n18 W=2u L=7u M=1
+
+MNM3 VG net29 GND GND n18 W=6u L=2u M=1
+MNM2 net19 net21 GND GND n18 W=3u L=2.5u M=1
+MPM4 VG net19 VDD VDD p18 W=20u L=1u M=1
+MPM3 net19 net19 VDD VDD p18 W=5u L=1u M=1
+
+
+.ENDS
