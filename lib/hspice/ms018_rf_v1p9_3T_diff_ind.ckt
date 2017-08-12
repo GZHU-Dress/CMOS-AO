@@ -1,0 +1,73 @@
+* 
+* No part of this file can be released without the consent of SMIC.
+*
+* Note: SMIC recommends that users set VNTOL=1E-9 at .option for more smooth convergence.
+*************************************************************************************************************
+* 0.13um Mixed Signal 1P8M with MIM Salicide 1.2V/3.3V RF SPICE Model (for HSPICE only)  *
+*************************************************************************************************************
+*
+* Release version    : 1.9
+*
+* Release date       : 20/05/2008
+*
+* Simulation tool    : Synopsys Star-HSPICE version 2008.03-ENG1
+*
+*
+*  Inductor   :
+*
+*        *------------------------------------------* 
+*        | Inductor subckt |   diff_ind_3t_rf   |
+*        *------------------------------------------*
+****************************************************
+* 0.18um 3-terminal differential Inductor  with centre tap *
+****************************************************
+* 1=port1(M6), 2=port2(M6), t1 is connected with center tap
+* R means inner redius; N means turns
+* Spacing is fixed at 1.5um and width is fixed at 8um
+.subckt diff_ind_3t_rf 1 2 T1 R=radius N=turns
+* inductor scalable model parameters
+.param
++LP1 ='1.2E-12'
++LS1 ='max(((0.0000837*R*1E+6+0.0104630)*N*N*N+(-0.0013405*R*1E+6-0.0622580)*N*N+(0.0117985*R*1E+6+0.0583020)*N+(-0.0118997*R*1E+6+0.2260920))*1E-9,1E-12)'
++LS11 ='max((0.010000*N+(0.000667*R*1E+6-0.010000))*1E-9,1E-12)'
++LS2 ='max(((0.0000837*R*1E+6+0.0104630)*N*N*N+(-0.0013405*R*1E+6-0.0622580)*N*N+(0.0117985*R*1E+6+0.0583020)*N+(-0.0118997*R*1E+6+0.2260920))*1E-9,1E-12)'
++LS22 ='max((0.010000*N+(0.000667*R*1E+6-0.010000))*1E-9,1E-12)'
++COXP1 ='1.05E-14'
++COXP2 ='1.05E-14'
++COXT1 ='2.1E-14'
++CP1P2 ='max(((0.0290*R*1E+6-2.1573)*N*N*N+(-0.4107*R*1E+6+31.7851)*N*N+(2.1484*R*1E+6-141.0570)*N+(-3.1111*R*1E+6+189.0954))*1E-15,1E-18)'
++CSBP1 ='1.05E-14'
++CSBP2 ='1.05E-14'
++CSBT1 ='2.1E-14'
++RP1 ='0.1'
++RS1 = 'max((0.876967*R*1E+6-2.618000)*N+(-1.666667*R*1E+6+100.000000),1E-6)'
++RS11 ='max((((-0.004369*R*1E+6+0.246608)*N*N+(0.044645*R*1E+6-1.281464)*N+(-0.061743*R*1E+6+3.781856))+((0.0000036*R*1E+6+ 0.0000230)*N*N*N+(-0.0000270*R*1E+6-0.0014070)*N*N+(0.0000225*R*1E+6+0.0127830)*N+(0.0001687*R*1E+6- 0.0120670 ))*(TEMPER-25))*(1+DRS11_RF),1E-6)'
++RS2 ='max((0.876967*R*1E+6-2.618000)*N+(-1.666667*R*1E+6+100.000000),1E-6)'
++RS22 ='max((((-0.004369*R*1E+6+0.246608)*N*N+(0.044645*R*1E+6-1.281464)*N+(-0.061743*R*1E+6+3.781856))+((0.0000036*R*1E+6+ 0.0000230)*N*N*N+(-0.0000270*R*1E+6-0.0014070)*N*N+(0.0000225*R*1E+6+0.0127830)*N+(0.0001687*R*1E+6- 0.0120670 ))*(TEMPER-25))*(1+DRS11_RF),1E-6)'
++RSBP1 ='12'
++RSBP2 ='12'
++RSBT1 ='12'
+* equivalent circuit
+RS1_rf NT1P1 ST1 RS1
+LS11_rf NT1P1 ST11 LS11
+RS11_rf ST11 ST1 RS11
+LS1_rf 1 NT1P1 LS1
+COXP1_rf 1 NP1 COXP1
+RSBP1_rf NP1 0 RSBP1
+CSBP1_rf NP1 0 CSBP1
+RS2_rf NT1P2 2 RS2
+RS22_rf ST22 2 RS22
+LS22_rf NT1P2 ST22 LS22
+LS2_rf ST1 NT1P2 LS2
+COXP2_rf 2 NP2 COXP2
+RSBP2_rf NP2 0 RSBP2
+CSBP2_rf NP2 0 CSBP2
+COXT1_rf ST1 NT1 COXT1
+RSBT1_rf NT1 0 RSBT1
+CSBT1_rf NT1 0 CSBT1
+RP1_rf ST1 NST1 RP1
+LP1_rf NST1 T1 LP1
+CP1P2_rf 1 2 CP1P2
+KP11_rf LS1_rf LS22_rf K='(-0.000503*R*1E+6-0.006022)*N*N*N+(0.007120*R*1E+6+0.051400)*N*N+(-0.027282*R*1E+6+0.081708)*N+(0.035111*R*1E+6-0.460486)'
+KP22_rf LS2_rf LS11_rf K='(-0.000503*R*1E+6-0.006022)*N*N*N+(0.007120*R*1E+6+0.051400)*N*N+(-0.027282*R*1E+6+0.081708)*N+(0.035111*R*1E+6-0.460486)'
+.ends diff_ind_3t_rf

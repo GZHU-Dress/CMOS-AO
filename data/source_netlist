@@ -46,4 +46,4 @@ MPM4 VG net19 VDD VDD p18 W=20u L=1u M=1
 MPM3 net19 net19 VDD VDD p18 W=5u L=1u M=1
 
 
-.ENDS
+.END

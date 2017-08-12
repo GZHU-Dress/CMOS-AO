@@ -1,0 +1,195 @@
+* 
+* No part of this file can be released without the consent of SMIC.
+*
+* Note: SMIC recommends that users set VNTOL=1E-9 at .option for more smooth convergence.
+******************************************************************************************
+* 0.18um Mixed Signal 1P6M with MIM Salicide 1.8V/3.3V RF SPICE Model (for HSPICE only)  *
+******************************************************************************************
+*
+* Release version    : 1.9
+*
+* Release date       : 3/30/2008
+*
+* Simulation tool    : Synopsys Star-HSPICE version 2006.09
+*
+*
+*  Resistor   :
+*        *-----------------------------------------* 
+*        | Resistor subckt |                       |
+*        *=========================================*
+*        | SAB N+ Diff     |    rndifsab_ckt_rf    | 
+*        *-----------------------------------------*
+*        | SAB P+ Diff     |    rpdifsab_ckt_rf    |
+*        *-----------------------------------------*
+*        | SAB N+ poly     |    rnposab_ckt_rf     |
+*        *-----------------------------------------*
+*        | SAB p+ poly     |    rpposab_ckt_rf     |
+*        *-----------------------------------------*
+*        | HRP             |    rhrpo_ckt_rf       |
+*        *-----------------------------------------*
+*
+***********************************                                   
+*Non-silicide N+ Diffusion resistor               
+***********************************                      
+.subckt rndifsab_ckt_rf port1 port2 l=l_rf w=w_rf devt='temper'
+.param
++rsh = '57.5+drndifsab_rf' tc1r = 1.51E-03 tc2r = 4.22E-07 dw = -2.62E-08
++rintc = 12.25 rint0 = 2.18E-05 rint1 = 0.00E+00
++rinttc1 = 1.81E-03 rinttc2 = 7.75E-07
+*+vc1 = 1.86E-04 vc2 = 2.05E-04
++jc1a = 2.13E-04 jc1b = -2.64E-09
++jc2a = 1.75E-08 jc2b = 2.04E-13
++rintjc1a = -1.56E-03 rintjc1b = 7.95E+2
++rintjc2a = 4.07E-02 rintjc2b = 2.44E+4
++rvc1 = 'jc1a + jc1b / l' rvc2 = '(jc2a + jc2b / l) / l'
++tcoef = '1.0+(devt-25.0)*(tc1r+tc2r*(devt-25.0))'
++weff = 'w-2*dw'
++rintvc1 = 'rintjc1a + rintjc1b * weff' rintvc2 = 'rintjc2a + rintjc2b * weff'
++rinttcoef = '1.0+(devt-25.0)*(rinttc1+rinttc2*(devt-25.0))'
+Ls_rf 2 port2    'max((-6.2 + 1.66*l*1e6 - 0.0106*l*l*1e12 - 5.44*w*1e6)*1e-9, 1e-12)'
+Cf_rf port1 2    'max((-25.5 + 3.86*l*1e6 - 0.0416*l*l*1e12 - 6.98*w*1e6)*1e-15, 1e-16)'
+Rs_inta_rf port1 n1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*min(1.0+rintvc1*v(port1,n1)+rintvc2*v(port1,n1)*v(port1,n1), 1.13)'
+Rs_rf n1 n2    'rsh*l/weff*tcoef*min(1.0+rvc1*v(n1,n2)+rvc2*v(n1,n2)*v(n1,n2), 1.15)'
+Rs_intb_rf  n2 1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*min(1.0+rintvc1*v(n2,1)+rintvc2*v(n2,1)*v(n2,1), 1.13)'
+Rs2_rf 2 port2   'max(221.0 + 11.9*l*1e6 - 48.0*w*1e6, 0.1)'
+Ls2_rf 1 2       'max((0.243 - 0.0233*l*1e6 + 3.85e-04*l*l*1e12)*1e-9, 1e-12)'
+Rsub1_rf 3 0     'max(2.48e+03 - 42.7*l*1e6 + 0.268*l*l*1e12 + 0.6*w*1e6, 0.1)'
+Csub1_rf 3 0     'max((0.0513 + 0.0393*l*1e6 + 0.102*w*1e6)*1e-15, 1e-16)'
+Cox1_rf port1 3  'max((-25.4 + 0.54*l*1e6 + 0.016*l*l*1e12 + 16.7*w*1e6)*1e-15, 1e-16)'
+Rsub2_rf 4 0     'max(2.69e+03 - 56.9*l*1e6 + 0.375*l*l*1e12 + 25.6*w*1e6, 0.1)'
+Csub2_rf 4 0     'max((-0.466 + 0.04*l*1e6 + 0.119*w*1e6)*1e-15, 1e-16)'
+Cox2_rf port2 4  'max((-28.9 + 0.67*l*1e6 + 0.015*l*l*1e12 + 17.3*w*1e6)*1e-15, 1e-16)' 
+.ends rndifsab_ckt_rf
+*
+***********************************                                   
+*Non-silicide P+ Diffusion resistor               
+***********************************                      
+.subckt rpdifsab_ckt_rf port1 port2 l=l_rf w=w_rf devt='temper'
+.param
++rsh = '116.2+drpdifsab_rf' tc1r = 1.41E-03 tc2r = 6.87E-07 dw = -1.37E-09
++rintc = 15.446 rint0 = 4.37E-05 rint1 = 0.00E+00
++rinttc1 = 1.38E-03 rinttc2 = 6.47E-07
+*+vc1 = -6.92E-06 vc2 = 1.08E-04
++jc1a = -6.82E-06 jc1b = -8.98E-12
++jc2a = 9.85E-09 jc2b = 5.20E-14
++rintjc1a = 9.03E-04 rintjc1b = -4.74E+2
++rintjc2a = 1.00E-02 rintjc2b = 1.74E+4
++rvc1 = 'jc1a + jc1b / l' rvc2 = '(jc2a + jc2b / l) / l'
++tcoef = '1.0+(devt-25.0)*(tc1r+tc2r*(devt-25.0))'
++weff = 'w-2*dw'
++rintvc1 = 'rintjc1a + rintjc1b * weff' rintvc2 = 'rintjc2a + rintjc2b * weff'
++rinttcoef = '1.0+(devt-25.0)*(rinttc1+rinttc2*(devt-25.0))'
+Ls_rf 2 port2    'max((0.192 + 1.28*l*1e6 + 0.0098*l*l*1e12 - 5.12*w*1e6)*1e-9, 1e-12)'
+Cf_rf port1 2    'max((-15.9 + 0.437*l*1e6 - 8.31e-04*l*l*1e12 + 8.57*w*1e6)*1e-15, 1e-16)'
+Rs_inta_rf  port1 n1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*min(1.0+rintvc1*v(port1,n1)+rintvc2*v(port1,n1)*v(port1,n1), 1.11)'
+Rs_rf n1 n2    'rsh*l/weff*tcoef*min(1.0+rvc1*v(n1,n2)+rvc2*v(n1,n2)*v(n1,n2), 1.12)'
+Rs_intb_rf  n2 1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*min(1.0+rintvc1*v(n2,1)+rintvc2*v(n2,1)*v(n2,1), 1.11)'
+Rs2_rf 2 port2   'max(119.0 + 52.8*l*1e6 - 0.258*l*l*1e12 - 159.0*w*1e6, 0.1)'
+Ls2_rf 1 2       'max((-1.16 + 0.486*l*1e6 + 1.59e-04*l*l*1e12 - 1.99*w*1e6)*1e-9, 1e-12)'
+Rsub1_rf 3 0     'max(1.27e+03 - 8.08*l*1e6 + 0.0412*l*l*1e12 - 40.2*w*1e6, 0.1)'
+Csub1_rf 3 0     'max((-0.673 + 0.0276*l*1e6 + 0.263*w*1e6)*1e-15, 1e-16)'
+Cox1_rf port1 3  'max((-15.9 + 0.853*l*1e6 + 10.8*w*1e6)*1e-15, 1e-16)'
+Rsub2_rf 4 0     'max(1.25e+03 - 10.8*l*1e6 + 0.0587*l*l*1e12 - 28.0*w*1e6, 0.1)'
+Csub2_rf 4 0     'max((-0.693 + 0.0234*l*1e6 + 0.268*w*1e6)*1e-15, 1e-16)'
+Cox2_rf port2 4  'max((-16.2 + 0.811*l*1e6 + 11.3*w*1e6)*1e-15, 1e-16)'
+.ends rpdifsab_ckt_rf
+*
+******************************                                   
+*Non-silicide N+ poly resistor               
+******************************                      
+.subckt rnposab_ckt_rf port1 port2 l=l_rf w=w_rf devt='temper'
+.param
++rsh = '271.6+drnposab_rf' tc1r = -1.35E-03 tc2r = 2.29E-06 dw = 4.71E-08
++rintc = 23.415 rint0 = 9.5E-05 rint1 = 0.00E+00
++rinttc1 = -9.76E-04 rinttc2 = 1.70E-06
+*+vc1 = 3.70E-04 vc2 = -1.74E-04
++jc1a = 8.23E-04 jc1b = -4.36E-08
++jc2a = -1.45E-08 jc2b = -2.17E-13
++rintjc1a = 1.20E-03 rintjc1b = -9.43E+2
++rintjc2a = -4.78E-02 rintjc2b = -8.34E+4
++tcoef = '1.0+(devt-25.0)*(tc1r+tc2r*(devt-25.0))'
++rvc1 = 'jc1a + jc1b / l' rvc2 = '(jc2a + jc2b / l) / l'
++weff = 'w-2*dw'    
++rintvc1 = 'rintjc1a + rintjc1b * weff' rintvc2 = 'rintjc2a + rintjc2b * weff'
++rinttcoef = '1.0+(devt-25.0)*(rinttc1+rinttc2*(devt-25.0))'
+Ls_rf 2 port2    'max(((19.5 - 3.26*l*1e6 + 0.18*l*l*1e12)/(w*1e6))*1e-9, 1e-12)'
+Cf_rf port1 2    'max((-1.34 + 3.09/(l*1e6) + 1.04*w*1e6)*1e-15, 1e-16)'
+Rs_inta_rf  port1 n1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*max(1.0+rintvc1*v(port1,n1)+rintvc2*v(port1,n1)*v(port1,n1), 0.86)'
+Rs_rf n1 n2    'rsh*l/weff*tcoef*max(1.0+rvc1*v(n1,n2)+rvc2*v(n1,n2)*v(n1,n2), 0.84)'
+Rs_intb_rf  n2 1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*max(1.0+rintvc1*v(n2,1)+rintvc2*v(n2,1)*v(n2,1), 0.86)'
+Rs2_rf 2 port2   'max((101.0 + 95.3*l*1e6 + 2.25*l*l*1e12)/(w*1e6), 0.1)'
+Ls2_rf 1 2       'max((1.1 + 0.305*l*1e6 + 8.96e-04*l*l*1e12 - 2.53*w*1e6)*1e-9, 1e-12)'
+Rsub1_rf 3 0     'max(3.51E+03 - 28.4*l*1e6 + 0.168*l*l*1e12 - 133.0*w*1e6, 0.1)'
+Csub1_rf 3 0     'max((-0.633 + 23.9/(l*1e6) + 0.244*w*1e6)*1e-15, 1e-16)'
+Cox1_rf port1 3  'max((1.37 + 0.0392*l*1e6)*(w*1e6)*1e-15, 1e-16)'
+Rsub2_rf 4 0     'max(2.83E+04/(l*1e6) + 70.2*w*1e6, 0.1)'
+Csub2_rf 4 0     'max((0.408 + 0.0225*l*1e6 + 1.46e-05*l*l*1e12)*1e-15, 1e-16)'
+Cox2_rf port2 4  'max((1.27 + 0.0399*l*1e6)*(w*1e6)*1e-15, 1e-16)'
+.ends rnposab_ckt_rf
+*
+******************************                                   
+*Non-silicide P+ poly resistor               
+******************************                      
+.subckt rpposab_ckt_rf port1 port2 l=l_rf w=w_rf devt='temper'
+.param
++rsh = '311.3+drpposab_rf' tc1r = -1.63E-04 tc2r = 7.46E-07 dw = 2.73E-08
++rintc = 29.965 rint0 = 1.1786E-04 rint1 = 0.00E+00
++rinttc1 = -2.76E-04 rinttc2 = 3.25E-07
+*+vc1 = 2.52E-05 vc2 = -1.62E-05
++jc1a = 1.09E-04 jc1b = -8.08E-09
++jc2a = -1.27E-09 jc2b = -2.73E-14
++rintjc1a = 2.63E-04 rintjc1b = -2.60E+2
++rintjc2a = 4.74E-03 rintjc2b = -5.30E+4
++tcoef = '1.0+(devt-25.0)*(tc1r+tc2r*(devt-25.0))'
++rvc1 = 'jc1a + jc1b / l' rvc2 = '(jc2a + jc2b / l) / l'
++weff = 'w-2*dw'
++rintvc1 = 'rintjc1a + rintjc1b * weff' rintvc2 = 'rintjc2a + rintjc2b * weff'
++rinttcoef = '1.0+(devt-25.0)*(rinttc1+rinttc2*(devt-25.0))'
+Ls_rf 2 port2    'max(((32.5 - 4.56*l*1e6 + 0.238*l*l*1e12)/(w*1e6))*1e-9, 1e-12)'
+Cf_rf port1 2    'max(((0.621 + 5.69e-04*l*1e6)*w*1e6)*1e-15, 1e-16)'
+Rs_inta_rf  port1 n1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*max(1.0+rintvc1*v(port1,n1)+rintvc2*v(port1,n1)*v(port1,n1), 0.88)'
+Rs_rf n1 n2    'rsh*l/weff*tcoef*max(1.0+rvc1*v(n1,n2)+rvc2*v(n1,n2)*v(n1,n2), 0.89)'
+Rs_intb_rf  n2 1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*max(1.0+rintvc1*v(n2,1)+rintvc2*v(n2,1)*v(n2,1), 0.88)'
+Rs2_rf 2 port2   'max(984.0 + 132.0*l*1e6 - 0.497*l*l*1e12 - 508.0*w*1e6, 0.1)'
+Ls2_rf 1 2       'max((-0.725 + 0.301*l*1e6 + 0.0028*l*l*1e12 - 2.56*w*1e6)*1e-9, 1e-12)'
+Rsub1_rf 3 0     'max(922.0 + 1.67E+04/(l*1e6) - 2.21*w*1e6, 0.1)'
+Csub1_rf 3 0     'max(((0.0025*l*1e6)*w*1e6)*1e-15, 1e-16)'
+Cox1_rf port1 3  'max((-1.68 + 0.0583*l*1e6 + 0.0027*l*l*1e12 + 2.01*w*1e6)*1e-15, 1e-16)'
+Rsub2_rf 4 0     'max(2.21E+03 + 1.60E+04/(l*1e6) - 130.0*w*1e6, 0.1)'
+Csub2_rf 4 0     'max((0.508 + 0.0209*l*1e6 + 0.0604*w*1e6)*1e-15, 1e-16)'
+Cox2_rf port2 4  'max((-2.98 + 0.11*l*1e6 + 0.0024*l*l*1e12 + 2.33*w*1e6)*1e-15, 1e-16)'
+.ends rpposab_ckt_rf
+*
+*****************                                   
+*HR poly resistor               
+*****************                      
+.subckt rhrpo_ckt_rf port1 port2 l=l_rf w=w_rf devt='temper'
+.param
++rsh = '995+drhrpo_rf' tc1r = -8.52E-04 tc2r = 1.98E-06 dw = -6E-09
++rintc = 7.88 rint0 = 3.96E-5 rint1 = 0.00E+00
++rinttc1 = -4.36E-04 rinttc2 = 1.23E-06
+*+vc1 = 5.41E-05 vc2 = -5.33E-05
++jc1a = 9.43E-05 jc1b = -2.90E-09
++jc2a = -2.82E-09 jc2b = -7.32E-14
++rintjc1a = -3.54E-02 rintjc1b = 2.52E+4
++rintjc2a = 1.36E+00 rintjc2b = -9.35E+5
++tcoef = '1.0+(devt-25.0)*(tc1r+tc2r*(devt-25.0))'
++rvc1 = 'jc1a + jc1b / l' rvc2 = '(jc2a + jc2b / l) / l'
++weff = 'w-2*dw'
++rintvc1 = 'rintjc1a + rintjc1b * weff' rintvc2 = 'rintjc2a + rintjc2b * weff'
++rinttcoef = '1.0+(devt-25.0)*(rinttc1+rinttc2*(devt-25.0))'
+Ls_rf 1 port2   'max((153.0 - 21.3*l*1e6 + 0.502*l*l*1e12)*1e-9, 1e-12)'
+Cf_rf port1 2   'max((-2.57 - 0.0112*l*1e6 - 3.26e-04*l*l*1e12 + 1.53*w*1e6)*1e-15, 1e-16)'
+Rs_inta_rf  port1 n1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*max(1.0+rintvc1*v(port1,n1)+rintvc2*v(port1,n1)*v(port1,n1), 0.89)'
+Rs_rf n1 n2    'rsh*l/weff*tcoef*max(1.0+rvc1*v(n1,n2)+rvc2*v(n1,n2)*v(n1,n2), 0.89)'
+Rs_intb_rf  n2 1   '(rintc+rint0/weff+rint1/(weff*weff))*rinttcoef*max(1.0+rintvc1*v(n2,1)+rintvc2*v(n2,1)*v(n2,1), 0.89)'
+Rs2_rf 2 port2  'max(9.83e+03 + 87.7*l*1e6 - 1.12e+03*w*1e6, 0.1)'
+Cf2_rf Port1 port2  'max((-0.0858 + 0.0288*l*1e6 - 1.98E-04*l*l*1e12 - 0.0356*w*1e6)*1e-15, 1e-16)'
+Rsub1_rf 3 0     'max(-1.71e+04 + 3.34e+05/(l*1e6) + 1.76e+03*w*1e6, 0.1)'
+Csub1_rf 3 0     'max((1.31 + 0.0052*l*1e6 - 0.133*w*1e6)*1e-15, 1e-16)'
+Cox1_rf port1 3  'max((-8.86 + 0.301*l*1e6 + 0.0033*l*l*1e12 + 2.92*w*1e6)*1e-15, 1e-16)'
+Rsub2_rf 4 0     'max(-2.13e+04 + 4.01e+05/(l*1e6) + 1.85e+03*w*1e6, 0.1)'
+Csub2_rf 4 0     'max((1.86 + 0.0086*l*1e6 - 0.2*w*1e6)*1e-15, 1e-16)'
+Cox2_rf port2 4  'max((-15.0 + 0.709*l*1e6 - 0.0093*l*l*1e12 + 4.58*w*1e6)*1e-15, 1e-16)'
+.ends rhrpo_ckt_rf
+*

@@ -1,11 +1,6 @@
-"""https://github.com/CzRzChao/SimpleGA"""
 # coding=utf-8
-# !/usr/bin/env python
-
-
-import matplotlib.pyplot as plt
-import math
 import random
+import math
 
 
 def b2d(b, max_value, chrom_length):
@@ -17,49 +12,57 @@ def b2d(b, max_value, chrom_length):
     return t
 
 
-def genEncoding(pop_size=50, chrom_length=10):
+def encoding(pop_size=50, chrom_length=10):
     """编码"""
     pop = [[]]
     for i in range(pop_size):
-        temp = []
+        tmp = []
         for j in range(chrom_length):
-            temp.append(random.randint(0, 1))
-        pop.append(temp)
+            tmp.append(random.randint(0, 1))
+        pop.append(tmp)
     return pop[1:]
 
 
-def decodechrom(pop, chrom_length):
+def decoding(pop_size,  pop, gene_w, gene_l, num):
     """解码"""
-    temp = []
-    for i in range(len(pop)):
-        t = 0
-        for j in range(chrom_length):
-            t += pop[i][j] * (math.pow(2, j))
-        temp.append(t)
-    return temp
+    gene_sum = gene_w + gene_l
+    for i in range(pop_size):
+        single = pop[i]
+        tmp = []
+        for j in range(num):
+            mos = single[gene_sum * j:gene_sum * (j + 1)]
+            W = L = 0
+            for q in range(gene_l):
+                L += mos[- q - 1] * (math.pow(2, q))
+            for q in range(gene_l, gene_sum):
+                W += mos[- q - 1] * (math.pow(2, q - gene_l))
+            tmp.append([W, L])
+            # todo: write tmp to file.
+    print(tmp)
 
 
-def calobjValue(pop, chrom_length, max_value):
+def calobjvalue(pop_size, pop, chrom_length, max_value, gene_w, gene_l, num):
     """个体评价"""
-    temp = []
+    tmp = []
     obj_value = []
-    temp = decodechrom(pop, chrom_length)
-    for i in range(len(temp)):
-        x = temp[i] * max_value / (math.pow(2, chrom_length) - 1)
-        obj_value.append(10 * math.sin(5 * x) + 7 * math.cos(4 * x))
+    tmp = decoding(pop_size, pop, gene_w, gene_l, num)
+    # print(tmp)
+    # for i in range(len(tmp)):
+    #     x = tmp[i] * max_value / (math.pow(2, chrom_length) - 1)
+    #     obj_value.append(10 * math.sin(5 * x) + 7 * math.cos(4 * x))
     return obj_value
 
 
-def calfitValue(obj_value):
+def calfitvalue(obj_value):
     """淘汰(去除负值)"""
     fit_value = []
     c_min = 0
     for i in range(len(obj_value)):
         if (obj_value[i] + c_min > 0):
-            temp = c_min + obj_value[i]
+            tmp = c_min + obj_value[i]
         else:
-            temp = 0.0
-        fit_value.append(temp)
+            tmp = 0.0
+        fit_value.append(tmp)
     return fit_value
 
 
@@ -127,14 +130,14 @@ def crossover(pop, pc):
     for i in range(pop_len - 1):
         if(random.random() < pc):
             cpoint = random.randint(0, len(pop[0]))
-            temp1 = []
-            temp2 = []
-            temp1.extend(pop[i][0:cpoint])
-            temp1.extend(pop[i + 1][cpoint:len(pop[i])])
-            temp2.extend(pop[i + 1][0:cpoint])
-            temp2.extend(pop[i][cpoint:len(pop[i])])
-            pop[i] = temp1
-            pop[i + 1] = temp2
+            tmp1 = []
+            tmp2 = []
+            tmp1.extend(pop[i][0:cpoint])
+            tmp1.extend(pop[i + 1][cpoint:len(pop[i])])
+            tmp2.extend(pop[i + 1][0:cpoint])
+            tmp2.extend(pop[i][cpoint:len(pop[i])])
+            pop[i] = tmp1
+            pop[i + 1] = tmp2
 
 
 def mutaion(pop, pm):
@@ -149,41 +152,3 @@ def mutaion(pop, pm):
                 pop[i][mpoint] = 0
             else:
                 pop[i][mpoint] = 1
-
-
-pop_size = 500  # 种群数量
-max_value = 15  # 基因种允许出现的最大值
-chrom_length = 15  # 染色体长度
-pc = 0.8  # 交配概率
-pm = 0.01  # 变异概率
-results = [[]]  # 存储每一代的最优解，N个二元组
-fit_value = []  # 个体适应度
-fit_mean = []  # 平均适应度
-
-pop = genEncoding(pop_size, chrom_length)
-for i in range(pop_size):
-    obj_value = calobjValue(pop, chrom_length, max_value)  # 个体评价
-    fit_value = calfitValue(obj_value)  # 淘汰
-    best_individual, best_fit = best(pop, fit_value)  # 选优，储存最优解和最优基因
-    results.append([best_fit, b2d(best_individual, max_value, chrom_length)])
-    selection(pop, fit_value)  # 新种群复制
-    crossover(pop, pc)  # 交配
-    mutaion(pop, pm)  # 变异
-results = results[1:]
-results.sort()
-print('results[-1]', results[-1], '\n', 'best_individual',
-      best_individual, '\n', 'best_fit',
-      best_fit, '\n', 'obj_value[1]', obj_value[1])
-# print('results', results)
-print("y = %f, x = %f" % (results[-1][0], results[-1][1]))
-
-X = []
-Y = []
-for i in range(500):
-    X.append(i)
-    t = results[i][0]
-    Y.append(t)
-
-plt.plot(X, Y)
-
-plt.show()
