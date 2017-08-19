@@ -17,12 +17,12 @@ results = [[]]
 max_value = 15
 
 chrom_length = (gene_w + gene_l) * num  # 染色体长度
-pop = encoding(pop_size, chrom_length)
-# print(pop)
+pop.encoding(pop_size, chrom_length)
+print(pop)
 
-for i in range(pop_size):
-    obj_value = calobjvalue(pop_size, pop, chrom_length, max_value,
-                            gene_w, gene_l, num)  # 个体评价
+# for i in range(pop_size):
+#     obj_value = calobjvalue(pop_size, pop, chrom_length, max_value,
+#                             gene_w, gene_l, num)  # 个体评价
     # fit_value = calfitvalue(obj_value)  # 淘汰
     # best_individual, best_fit = best(pop, fit_value)  # 选优，储存最优解和最优基因
     # results.append([best_fit, b2d(best_individual, max_value, chrom_length)])
