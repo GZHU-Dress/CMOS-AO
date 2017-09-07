@@ -69,15 +69,12 @@
                 \hline
                 ... \\
                 MPM5 ... W=100u L=.2u M=35 \\
-                *MNMF ... W=3u L=1u M=1 \\
                 MPM6 ... W=4u L=1u M=1 \\
                 MPM0 ... W=18u L=1u M=1 \\
-                
                 MPM2 ... W=4u L=1u M=1 \\
                 MPM1 ... W=4u L=1u M=1 \\
                 MNM1 ... W=2u L=7u M=1 \\
                 MNM0 ... W=2u L=7u M=1 \\
-                
                 MNM3 ... W=6u L=2u M=1 \\
                 MNM2 ... W=3u L=2.5u M=1 \\
                 MPM4 ... W=20u L=1u M=1 \\
@@ -103,17 +100,23 @@
             \label{fig3}
         \end{figure}
     \subsection{个体评价}
-        针对不同的设计环境个体评价的方式也会不同，在本文中大体上来说有两个方向，一个是变化趋势，我需要某个分析出来的指标变大还是变小；二是指标权重，也就是每个指标对于整体分数的影响，比如我需要设计一个运放，那么电压增益这一指标就可以适当提高权重，最后个体得分采用加权平均计算。
-        $$\sum_{i=0}^{n} Indicator(i) * weight(i)$$
+        针对不同的设计环境个体评价的方式也会不同，在本文中大体上来说有两个方向：变化趋势和指标权重。
+        
+        \textbf{变化趋势: }需要同历史数据进行比较判断某个指标变化的趋势，如果与目标趋势相同则加分，与目标趋势相悖则减分。 \\
+        
+        \textbf{指标权重: }，也就是每个指标对于整体分数的影响，比如我需要设计一个运放，那么电压增益这一指标就可以适当提高权重，最后个体得分采用加权平均计算。
+        
+        $$\sum_{i=0}^{n} Indicator(i) * Weight(i)$$
+        
         评价标准如下:
         \begin{table}[htbp]
             \centering
-            \begin{tabular}{lcl}
+            \begin{tabular}{ccc}
                 \toprule
-                指标 & 权重 & 趋势 \\
+                indicator & weight & trend \\
                 \midrule
                 A & 0.232211 & + \\
-                B & 0.751256 & + \\
+                B & 0.751256 & - \\
                 \bottomrule
             \end{tabular}
             \caption{评价标准示例}
