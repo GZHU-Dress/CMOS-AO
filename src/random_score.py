@@ -37,6 +37,7 @@ result:
         rt_num: eg : 15 (only need it for random testing)
         rt_name(result target name): eg: ['L', 'I', ...]
         rt_value(result target value): eg: ['0.86', ...]
+        rt_trend(result target developing trend): eg [['L', 1], ...]
         rt_data(result): eg: [['L', '0.86'], ['J', '0.76'], ...]
         times: generating result times, eg:
             gen_result(rt_path, rt_name, times=1)
@@ -115,18 +116,27 @@ def get_result(rt_path):
     return rt_data, rt_num
 
 
-def compare(rt_data, rt_history, st_name, st_trend):
-    # TODO: read all data from sqlite
-    pass
+def compare(rt_history):
+    rt_trend = []
+    for i in rt_history:
+        if i[1] < i[2]:
+            rt_trend.append([i[0], 1])
+        if i[1] > i[2]:
+            rt_trend.append([i[0], -1])
+        if i[1] == i[2]:
+            rt_trend.append([i[0], 0])
+    # print(rt_trend)
+    return rt_trend
 
 
 def sql_creat(db_path):
-    if os.path.isfile(db_path):
-        choose = input('The database already exists, Overwrite or not? [Y/n] ')
-        if choose == 'n':
-            sys.exit(1)
-        else:
-            os.remove(db_path)
+    # if os.path.isfile(db_path):
+    #     choose = input('The database already exists, Overwrite or not? [Y/n] ')
+    #     if choose == 'n':
+    #         sys.exit(1)
+    #     else:
+    #         os.remove(db_path)
+    os.remove(db_path)
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute('''CREATE TABLE `rt_history`
@@ -138,16 +148,17 @@ def sql_creat(db_path):
 
 
 def sql_read(db_path, rt_num, times):
+    rt_history = []
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    count = rt_num * (times - 2)
+    # count = rt_num * (times - 2)
     for row in c.execute(
-            'SELECT `rt_name`,group_concat(`rt_data`) \
-            FROM `rt_history` WHERE `id` > ? AND `id` < ? \
-            GROUP BY `rt_name` ORDER BY `rt_name`;', (count, count * 3)):
-        print(row)
-    # 'SELECT rt_name,group_concat(rt_data) FROM rt_history GROUP BY rt_name')
+        'SELECT `rt_name`,group_concat(`rt_data`) \
+        FROM `rt_history` WHERE `id` >= ? AND `id` < ? \
+        GROUP BY `rt_name` ORDER BY `rt_name`;', (rt_num * (times - 1), rt_num * (times + 1))):
+        rt_history.append([row[0], float(row[1].split(',')[0]), float(row[1].split(',')[1])])
     conn.close()
+    return rt_history
 
 
 def sql_write(db_path, rt_data):
@@ -171,13 +182,13 @@ def check(**kwargs):
         print('[ERROR!]', end='\n')
         sys.exit(1)
     else:
-        print('Checking %s file' % [key for key in kwargs.keys()][0], end='')
-        echo(' ...... ')
-        print('[OK!]', end='\n')
+        # print('Checking %s file' % [key for key in kwargs.keys()][0], end='')
+        # echo(' ...... ')
+        # print('[OK!]', end='\n')
         return target
 
 
-def echo(string, speed=0.03):
+def echo(string, speed=0):
     for i in string:
         print(i, sep=' ', end='', flush=True)
         time.sleep(speed)
@@ -187,8 +198,8 @@ if __name__ == '__main__':
     st_path = '../data/standard'
     rt_path = '../data/result'
     db_path = '../data/history.db'
-    times = 5
-    rt_num = 3
+    times = 1000
+    rt_num = 26  # A-Z
     [st_data, st_name] = get_standard(st_path)
     sql_creat(db_path)
     rt_name = init_result(rt_path, rt_num)
@@ -196,5 +207,9 @@ if __name__ == '__main__':
         gen_result(rt_path, rt_name)
         [rt_data, rt_num] = get_result(rt_path)
         sql_write(db_path, rt_data)
-    sql_read(db_path, rt_num, times)
+        if i > 1:
+            rt_history = sql_read(db_path, rt_num, i)
+            rt_trend = compare(rt_history)
+        else:
+            pass
     # data = analysing(standard, targets)
