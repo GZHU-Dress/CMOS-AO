@@ -1,1 +1,7 @@
 source_data
+doc/example.out
+doc/cnstyle.aux doc/example.aux
+doc/example.log
+doc/example.synctex.gz
+src/cmosga
+src/__pycache__/
