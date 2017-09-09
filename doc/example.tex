@@ -4,6 +4,8 @@
 \usepackage{multicol}
 \usepackage{indentfirst}
 \usepackage{booktabs}
+\usepackage{subfigure}
+\usepackage{amsmath}
 \setlength{\parindent}{2em}
 
 \begin{document}
@@ -29,11 +31,13 @@
 \twocolumn
 
 \section{引言}
-暂略
+暂略。
+
+因入门需要，所以尽量用通俗化语言表述以及用简单方法来实现。
 
 \section{遗传算法概述}
     \subsection{结构}
-        “物竞天择，适者生存”是达尔文进化论的产物，也是遗传算法的出发点，通过自然选择的过程来优化系统并达到预期目标，其具体流程结构如下:$^{\ref{fig1}}$。
+        “物竞天择，适者生存”是达尔文进化论的产物，也是遗传算法的出发点，通过自然选择的过程来优化系统并达到预期目标，其具体流程结构如下:$^{fig\ \ref{fig1}}$。
     \begin{figure}[htbp]
         \centering
         \includegraphics[width = 3in]{fig/遗传算法.png}
@@ -51,7 +55,7 @@
     \subsection{交配}
         剩下的个体在经过生存条件筛选后得以保留，获得了交配的权利，其中优势性状越多的个体获得交配的概率也就相对越高，优势性状得以传承。且交配过程中不同个体的染色体可以互换，产生新的性状。
     \subsection{变异}
-        除了正常交换以外，还可能发生染色体变异$^{\ref{fig2}}$和基因突变现象。 
+        除了正常交换以外，还可能发生染色体变异$^{fig\ \ref{fig2}}$和基因突变现象。 
         \begin{figure}[htbp]
             \centering
             \includegraphics[width = 3in]{fig/染色体变异.png}
@@ -87,11 +91,10 @@
         \end{table}
         在芯片设计中主要影响电路性能的参数就是各个 MOS 管的宽和长，以及它们之间的比例，因此编码也从这两个参数入手。考虑到二进制转换时候小数部分的精度问题，在这里需要做一些处理，比如先将所有数据都预先做倍乘处理，相当于将小数点的移位，等解码的时候再除回来。如果在其他模型中的参数为符号数，则可以引入补码机制来解决这一问题。考虑到数据处理上的方便，目前人为限定编码结果为固定长度，不足位则用0补充。
         
-        在确定二进制转换方法之后，将每一个 MOS 管的宽和长作为一个小组进行编码，单个个体携带一整套编码，也即包含了电路中所有 MOS 管的信息，具体个体的编码长度由下计算:
-        
+        在确定二进制转换方法之后，将每一个 MOS 管的宽和长作为一个小组进行编码，单个个体携带一整套编码，也即包含了电路中所有 MOS 管的信息，具体个体的编码长度由下计算: \\
         $$length = (W + L) * n$$
         
-        W 和 L 分别代表编码宽度和长度所需二进制数的个数，n 代表初始网表中MOS管的数量，这一值由正则表达式格式化处理网表文件$^{\ref{table1}}$后可得(详见FILEIO.read)。按照这种样式一共随机生成五百个(粗略数)个体作为初始种群。
+        W 和 L 分别代表编码宽度和长度所需二进制数的个数，n 代表初始网表中MOS管的数量，这一值由正则表达式格式化处理网表文件$^{table\ \ref{table1}}$后可得(详见FILEIO.read)。按照这种样式一共随机生成五百个(粗略数)个体作为初始种群。
 
         \begin{figure}[htbp]
             \centering
@@ -104,23 +107,31 @@
         
         \textbf{变化趋势: }需要同历史数据进行比较判断某个指标变化的趋势，如果与目标趋势相同则加分，与目标趋势相悖则减分。 \\
         
-        \textbf{指标权重: }，也就是每个指标对于整体分数的影响，比如我需要设计一个运放，那么电压增益这一指标就可以适当提高权重，最后个体得分采用加权平均计算。
+        \textbf{指标权重: }，也就是每个指标对于整体分数的影响，比如我需要设计一个运放，那么电压增益这一指标就可以适当提高权重。评价配置文件示例如下$^{table\ \ref{table2}}$，从左至右依次为指标名称、权重、目标趋势。
         
-        $$\sum_{i=0}^{n} Indicator(i) * Weight(i)$$
-        
-        评价标准如下:
         \begin{table}[htbp]
             \centering
             \begin{tabular}{ccc}
                 \toprule
                 indicator & weight & trend \\
                 \midrule
-                A & 0.232211 & + \\
-                B & 0.751256 & - \\
+                A & 0.25 & + \\
+                B & 0.63 & - \\
+                C & 0.33 & + \\
                 \bottomrule
             \end{tabular}
             \caption{评价标准示例}
+            \label{table2}
         \end{table}
+    
+        考虑到配置文件容错性，一方面需要做查重处理，另外一方面就是要考虑到根据网表文件输出的分析结果来对应相应的指标评价标准，因此这里的权重设置为相对权重，评分方式也需要加入一定的自适应性。这里以从网表文件匹配到指标 A、C 为例，简单处理如下：\\
+        $$Relative weight\ A = \pm \frac{A}{A+C}*Basic\ points$$ \\
+        $$Relative weight\ C = \pm \frac{C}{A+C}*Basic\ points$$ \\
+        由上得出 A、C 的绝对权重，最后个体得分采用加权平均计算。 \\
+        $$\sum_{i=0}^{n} Indicator(i) * Weight(i)$$ 
+        
+    \subsection{生存条件}
+        
 \section{仿真和实验结果}
 
 \end{document}
